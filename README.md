@@ -2,6 +2,8 @@
 
 ![](algue.png)
 
+Checkout gereferenced maps here: https://maning.github.io/tabas-ng-bayan/
+
 ## Status
 
 * [In progress](https://github.com/maning/tabas-ng-bayan/issues?q=is%3Aissue+is%3Aopen+label%3Adata)
