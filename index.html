@@ -19,12 +19,11 @@
 <body>
   <div id="map"></div>
   <script>
-    // --- Your list of MapWarper sheet IDs ---
-    const sheetIds = [9211, 9198, 9205, 9200, 9206, 9207, 9211, 9212,
-    9191];
+    // --- Your list of MapWarper sheet IDs (1:50k series) ---
+    const sheetIds = [9211, 9198, 9205, 9200, 9206, 9207, 9211, 9212, 9191];
 
     // --- Initialize Leaflet map ---
-    const map = L.map('map').setView([8.1955, 117.2279], 10); 
+    const map = L.map('map').setView([8.1955, 117.2279], 10);
 
     // --- Base layer (OSM) ---
     const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -32,27 +31,40 @@
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // --- Create a group layer for your topo maps ---
-    const topoGroup = L.layerGroup();
+    // --- 1:50k Topomap Mosaic Group ---
+    const topo50kGroup = L.layerGroup();
 
-    // --- Add each MapWarper TMS layer ---
     sheetIds.forEach(id => {
       const url = `https://warper.wmflabs.org/maps/tile/${id}/{z}/{x}/{y}.png`;
       const layer = L.tileLayer(url, {
-        opacity: 0.95, // slightly transparent so it blends with OSM
-        //attribution: 'Mapwarper / Wikimedia Labs'
+        opacity: 0.9,
         attribution: `&copy; <a href="https://warper.wmflabs.org/maps/${id}" target="_blank">MapWarper ${id}</a>`
       });
-      topoGroup.addLayer(layer);
+      topo50kGroup.addLayer(layer);
     });
 
-    // --- Add the topoGroup to map ---
-    topoGroup.addTo(map);
+    // --- 1:250k AMS Layer ---
+    const topo250k = L.tileLayer('https://tabas-ng-bayan.s3.amazonaws.com/tiles/250k-AMS/{z}/{x}/{y}.png', {
+      maxZoom: 12,
+      opacity: 0.9,
+      attribution: '&copy; AMS 1:250,000 Map Series'
+    });
 
-    // --- Optional: Layer control toggle ---
-    L.control.layers({ 'OpenStreetMap': osm }, { '1:50k Topo': topoGroup }).addTo(map);
+    // --- Add both to map initially (optional: you can start with only one) ---
+    topo50kGroup.addTo(map);
+    // topo250k.addTo(map); // uncomment if you want it visible on load
+
+    // --- Layer controls ---
+    const baseLayers = {
+      'OpenStreetMap': osm
+    };
+
+    const overlayLayers = {
+      '1:50k Topo (MapWarper)': topo50kGroup,
+      '1:250k AMS': topo250k
+    };
+
+    L.control.layers(baseLayers, overlayLayers, { collapsed: false }).addTo(map);
   </script>
 </body>
 </html>
-
-
